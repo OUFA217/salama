@@ -29,6 +29,14 @@ class GuestCubit extends Cubit<GuestStates> {
   void addMessage(types.TextMessage message) {
     try {
       messages.insert(0, message);
+      final messageUser = types.TextMessage(
+        id: const Uuid().v4(),
+        text: "Loading...",
+        createdAt: DateTime.now().millisecondsSinceEpoch,
+        author: anotherUser,
+      );
+      messages.insert(0, messageUser);
+
       emit(GuessLoadingMessageState());
       log(message.text.toString());
       Dio dio = Dio();
@@ -38,10 +46,11 @@ class GuestCubit extends Cubit<GuestStates> {
       response.then((value) {
         final messageUser = types.TextMessage(
           id: const Uuid().v4(),
-          text: value.data["chatbot_output"],
+          text: value.data["chatbot_output"].toString().replaceAll("\n", ""),
           createdAt: DateTime.now().millisecondsSinceEpoch,
           author: anotherUser,
         );
+        messages.removeWhere((element) => element.text == "Loading...");
         messages.insert(0, messageUser);
         log(messages.toString());
         emit(GuestSentSuccessfullyMessageState());
@@ -58,9 +67,14 @@ class GuestCubit extends Cubit<GuestStates> {
   }
 
   final user = const types.User(
-    id: '82091008-a484-4a89-ae75-a22bf8d6f3ac',
-  );
+      id: '82091008-a484-4a89-ae75-a22bf8d6f3ac',
+      firstName: "زائر",
+      imageUrl:
+          "https://kirstymelmedlifecoach.com/wp-content/uploads/2020/10/279-2799324_transparent-guest-png-become-a-member-svg-icon.png");
   final anotherUser = const types.User(
+    firstName: "سلامة",
+    lastName: "مرشدك الاصطناعى",
+    imageUrl: 'https://avatars.githubusercontent.com/u/39745173?v=4',
     id: '85091008-a484-4a89-ae75-a22bf8d6f3ac',
   );
 }
