@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "142476817064",
+    "project_id": "salama-2d6ee",
+    "storage_bucket": "salama-2d6ee.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:142476817064:android:f1028a247fce4da81ec89d",
+        "android_client_info": {
+          "package_name": "com.example.salama"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA_meJXQrdWfB3sh_DecZ_ZZjgPErTg_EY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

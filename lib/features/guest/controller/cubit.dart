@@ -1,11 +1,16 @@
 import 'dart:developer';
 
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
+import 'package:logger/logger.dart';
 import 'package:salama/core/endpoint/api_endpoints.dart';
+import 'package:salama/core/services/navigator_service.dart';
+import 'package:salama/core/services/shared_pref.dart';
 import 'package:salama/features/guest/controller/states.dart';
+import 'package:salama/features/sign_up/view/sign_up.dart';
 import 'package:uuid/uuid.dart';
 
 class GuestCubit extends Cubit<GuestStates> {
@@ -13,7 +18,7 @@ class GuestCubit extends Cubit<GuestStates> {
   static GuestCubit get(context) => BlocProvider.of(context);
   List<types.TextMessage> messages = [];
 
-  void handleSendPressed(types.PartialText message) {
+  void handleSendPressed(types.PartialText message, {BuildContext? context}) {
     final textMessage = types.TextMessage(
       author: user,
       createdAt: DateTime.now().millisecondsSinceEpoch,
@@ -27,7 +32,43 @@ class GuestCubit extends Cubit<GuestStates> {
   void loadMessages() async {}
 
   void addMessage(types.TextMessage message) {
-    try {
+    final cachedLengthMessageBool = CacheHelper.getData(key: "length");
+
+    Logger().e(cachedLengthMessageBool);
+
+    int cachedLengthMessage = 0;
+
+    if (cachedLengthMessageBool == true) {
+      cachedLengthMessage = CacheHelper.getActualData(key: "length");
+    }
+    if (cachedLengthMessage == 10) {
+      var context = NavigationService.navigatorKey.currentContext;
+
+      showDialog(
+        context: context!,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text("Guest User Can't Send More Than 10 Messages"),
+            content: const Text("You can't send more than 10 messages"),
+            actions: [
+              TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const RegisterScreen()));
+                  },
+                  child: const Text("Sign Up")),
+              TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Text("Sign In")),
+            ],
+          );
+        },
+      );
+    } else {
       messages.insert(0, message);
       final messageUser = types.TextMessage(
         id: const Uuid().v4(),
@@ -52,13 +93,12 @@ class GuestCubit extends Cubit<GuestStates> {
         );
         messages.removeWhere((element) => element.text == "Loading...");
         messages.insert(0, messageUser);
-        log(messages.toString());
+        Logger().i(messages.length.toString());
+        CacheHelper.saveDate(key: "length", value: messages.length);
         emit(GuestSentSuccessfullyMessageState());
       }).catchError((error) {
         log("the error is: $error");
       });
-    } catch (e) {
-      log(e.toString());
     }
   }
 

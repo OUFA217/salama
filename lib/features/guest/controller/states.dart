@@ -7,3 +7,5 @@ class GuessLoadingMessageState extends GuestStates {}
 class GuessLoadedMessageState extends GuestStates {}
 
 class GuestSentSuccessfullyMessageState extends GuestStates {}
+
+class GuestCantSendMessageState extends GuestStates {}

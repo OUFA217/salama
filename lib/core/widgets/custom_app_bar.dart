@@ -25,9 +25,12 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           CircleAvatar(
             radius: 25,
             backgroundColor: ColorsConstants.colorDefault,
-            child: Image.asset(
-              "assets/images/appIcon.png",
-              fit: BoxFit.fill,
+            child: Hero(
+              tag: "Logo",
+              child: Image.asset(
+                "assets/images/appIcon.png",
+                fit: BoxFit.fill,
+              ),
             ),
           )
         ],
