@@ -20,4 +20,5 @@ abstract class ColorsConstants {
   static const colorLightOrange = Color.fromRGBO(244, 177, 66, 1);
   static const colorDeepPurble = Colors.deepPurple;
   static const colorCoffe = Color.fromRGBO(111, 78, 55, 1);
+  static const colorgreen = Colors.green;
 }

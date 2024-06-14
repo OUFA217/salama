@@ -1,25 +1,22 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:salama/core/constants/colors_constants.dart';
 import 'package:salama/core/widgets/custom_app_bar.dart';
-import 'package:salama/features/guest/controller/cubit.dart';
-import 'package:salama/features/guest/controller/states.dart';
+import 'package:salama/features/home/controller/cubit.dart';
+import 'package:salama/features/home/controller/states.dart';
 
-class GuestScreen extends StatelessWidget {
-  const GuestScreen({super.key});
+class HomeScreen extends StatelessWidget {
+  const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => GuestCubit(),
-      child: BlocBuilder<GuestCubit, GuestStates>(builder: (context, state) {
-        final cubit = GuestCubit.get(context);
-        log(state.toString());
+      create: (context) => HomeCubit(),
+      child: BlocBuilder<HomeCubit, HomeStates>(builder: (context, state) {
+        final cubit = HomeCubit.get(context);
         return Scaffold(
-          appBar: const CustomAppBar(title: "Guest Salama's Chat"),
+          appBar: const CustomAppBar(title: "Salama's Chat"),
           body: Chat(
               l10n: const ChatL10nAr(),
               theme: const DefaultChatTheme(

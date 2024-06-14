@@ -5,9 +5,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:salama/core/constants/image_constants.dart';
 import 'package:salama/core/constants/string_constants.dart';
+import 'package:salama/core/services/shared_pref.dart';
 import 'package:salama/core/size_handler/size_handler.dart';
-import 'package:salama/core/widgets/navigation.dart';
 import 'package:salama/features/guest/view/guest_screen.dart';
+import 'package:salama/features/home/view/home_screen.dart';
 import 'package:salama/features/splash/controller/cubit.dart';
 import 'package:salama/features/splash/controller/states.dart';
 
@@ -56,7 +57,33 @@ class _SplashScreenState extends State<SplashScreen>
     _controllerArabic!.repeat();
 
     Future.delayed(const Duration(seconds: 3), () {
-      navigateTo(context, const GuestScreen());
+      if (CacheHelper.getActualData(key: 'uid') != null) {
+        Navigator.pushAndRemoveUntil(
+          context,
+          PageRouteBuilder(
+            pageBuilder: (context, animation, secondaryAnimation) =>
+                const HomeScreen(),
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+              return FadeTransition(opacity: animation, child: child);
+            },
+            transitionDuration: const Duration(milliseconds: 2500),
+          ),
+          (route) => false,
+        );
+      } else {
+        Navigator.push(
+            context,
+            PageRouteBuilder(
+              pageBuilder: (context, animation, secondaryAnimation) =>
+                  const GuestScreen(),
+              transitionsBuilder:
+                  (context, animation, secondaryAnimation, child) {
+                return FadeTransition(opacity: animation, child: child);
+              },
+              transitionDuration: const Duration(milliseconds: 2500),
+            ));
+      }
     });
     super.initState();
   }
@@ -87,7 +114,7 @@ class _SplashScreenState extends State<SplashScreen>
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Hero(
-                    tag: 'Logo',
+                    tag: "Logo",
                     child: Image.asset(ImageConstants.logo),
                   ),
                   Text(
