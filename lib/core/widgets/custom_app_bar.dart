@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:salama/core/constants/colors_constants.dart';
+import 'package:salama/core/constants/image_constants.dart';
 import 'package:salama/core/size_handler/size_handler.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -28,7 +29,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
             child: Hero(
               tag: "Logo",
               child: Image.asset(
-                "assets/images/appIcon.png",
+                ImageConstants.logo,
                 fit: BoxFit.fill,
               ),
             ),

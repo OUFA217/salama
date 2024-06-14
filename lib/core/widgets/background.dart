@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:salama/core/constants/image_constants.dart';
 
 class Background extends StatelessWidget {
   final Widget child;
@@ -33,8 +34,7 @@ class Background extends StatelessWidget {
             right: 30,
             child: Hero(
               tag: "Logo",
-              child: Image.asset("assets/images/appIcon.png",
-                  width: size.width * 0.35),
+              child: Image.asset(ImageConstants.logo, width: size.width * 0.35),
             ),
           ),
           Positioned(

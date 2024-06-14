@@ -15,8 +15,24 @@ class RegisterScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
 
-    return BlocBuilder<SignUpCubit, SignUpStates>(builder: (context, state) {
+    return BlocConsumer<SignUpCubit, SignUpStates>(listener: (context, state) {
+      if (state is SignUpSuccessState) {
+        Navigator.push(
+          context,
+          PageRouteBuilder(
+            pageBuilder: (context, animation, secondaryAnimation) =>
+                const SignInScreen(),
+            transitionDuration: const Duration(milliseconds: 1000),
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+              return FadeTransition(opacity: animation, child: child);
+            },
+          ),
+        );
+      }
+    }, builder: (context, state) {
       final cubit = SignUpCubit.get(context);
+
       return Scaffold(
         body: SingleChildScrollView(
           child: Background(
@@ -95,6 +111,8 @@ class RegisterScreen extends StatelessWidget {
                       if (state is SignUpLoadingState ||
                           state is SignUpLoadingFirebaseState) {
                       } else {
+                        FocusScope.of(context).unfocus();
+
                         if (cubit.passwordController.text.isNotEmpty &&
                             cubit.emailController.text.isNotEmpty &&
                             cubit.nameController.text.isNotEmpty &&
@@ -160,8 +178,17 @@ class RegisterScreen extends StatelessWidget {
                     onTap: () {
                       Navigator.push(
                           context,
-                          MaterialPageRoute(
-                            builder: (context) => const SignInScreen(),
+                          PageRouteBuilder(
+                            pageBuilder:
+                                (context, animation, secondaryAnimation) =>
+                                    const SignInScreen(),
+                            transitionsBuilder: (context, animation,
+                                secondaryAnimation, child) {
+                              return FadeTransition(
+                                  opacity: animation, child: child);
+                            },
+                            transitionDuration:
+                                const Duration(milliseconds: 1000),
                           ));
                     },
                     child: const Text(

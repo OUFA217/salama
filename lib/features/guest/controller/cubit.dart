@@ -10,6 +10,7 @@ import 'package:salama/core/endpoint/api_endpoints.dart';
 import 'package:salama/core/services/navigator_service.dart';
 import 'package:salama/core/services/shared_pref.dart';
 import 'package:salama/features/guest/controller/states.dart';
+import 'package:salama/features/sign_in/view/sign_in_screen.dart';
 import 'package:salama/features/sign_up/view/sign_up.dart';
 import 'package:uuid/uuid.dart';
 
@@ -18,7 +19,7 @@ class GuestCubit extends Cubit<GuestStates> {
   static GuestCubit get(context) => BlocProvider.of(context);
   List<types.TextMessage> messages = [];
 
-  void handleSendPressed(types.PartialText message, {BuildContext? context}) {
+  void handleSendPressed(types.PartialText message) {
     final textMessage = types.TextMessage(
       author: user,
       createdAt: DateTime.now().millisecondsSinceEpoch,
@@ -55,13 +56,36 @@ class GuestCubit extends Cubit<GuestStates> {
                   onPressed: () {
                     Navigator.push(
                         context,
-                        MaterialPageRoute(
-                            builder: (context) => const RegisterScreen()));
+                        PageRouteBuilder(
+                          pageBuilder:
+                              (context, animation, secondaryAnimation) =>
+                                  const RegisterScreen(),
+                          transitionsBuilder:
+                              (context, animation, secondaryAnimation, child) {
+                            return FadeTransition(
+                                opacity: animation, child: child);
+                          },
+                          transitionDuration:
+                              const Duration(milliseconds: 1200),
+                        ));
                   },
                   child: const Text("Sign Up")),
               TextButton(
                   onPressed: () {
-                    Navigator.pop(context);
+                    Navigator.push(
+                        context,
+                        PageRouteBuilder(
+                          pageBuilder:
+                              (context, animation, secondaryAnimation) =>
+                                  const SignInScreen(),
+                          transitionsBuilder:
+                              (context, animation, secondaryAnimation, child) {
+                            return FadeTransition(
+                                opacity: animation, child: child);
+                          },
+                          transitionDuration:
+                              const Duration(milliseconds: 1200),
+                        ));
                   },
                   child: const Text("Sign In")),
             ],
