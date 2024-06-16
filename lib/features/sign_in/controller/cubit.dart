@@ -30,10 +30,11 @@ class SignInCubit extends Cubit<SignInStates> {
     final response = auth.signInWithEmailAndPassword(
         email: model.email.trim(), password: model.password);
     response.then((value) {
-      emit(SignInSuccessState());
       Fluttertoast.showToast(
           msg: 'Login Success', backgroundColor: ColorsConstants.colorgreen);
       CacheHelper.saveDate(key: 'uid', value: value.user!.uid);
+      CacheHelper.saveDate(key: 'email', value: model.email);
+      emit(SignInSuccessState());
     }).catchError((error) {
       Fluttertoast.showToast(
           msg: error.toString(), toastLength: Toast.LENGTH_LONG);

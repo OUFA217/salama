@@ -155,7 +155,7 @@ class SignInScreen extends StatelessWidget {
                           ));
                     },
                     child: const Text(
-                      "Already Have an Account? Sign in",
+                      "Already Have an Account? Sign up",
                       style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
