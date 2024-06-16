@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -23,6 +24,8 @@ class SignUpCubit extends Cubit<SignUpStates> {
 
   FirebaseAuth auth = FirebaseAuth.instance;
 
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
   void changeShowPassword() {
     showPassword = !showPassword;
     emit(SignUpChangeShowPasswordState());
@@ -37,6 +40,8 @@ class SignUpCubit extends Cubit<SignUpStates> {
 
     final response = auth.createUserWithEmailAndPassword(
         email: user.email!, password: user.password!);
+    _firestore.collection('users').doc(user.email).set(
+        {'name': user.name, 'username': user.username, 'email': user.email});
     emit(SignUpLoadingFirebaseState());
     response.then((value) {
       emit(SignUpSuccessState());

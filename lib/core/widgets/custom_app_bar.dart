@@ -16,6 +16,14 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       backgroundColor: ColorsConstants.colorDefault,
       title: Row(
         children: [
+          IconButton(
+              onPressed: () {
+                Scaffold.of(context).openDrawer();
+              },
+              icon: const Icon(
+                Icons.menu,
+                color: Colors.white,
+              )),
           Text(
             title,
             style: GoogleFonts.raleway(
