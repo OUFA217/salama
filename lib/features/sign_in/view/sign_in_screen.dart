@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:salama/core/constants/colors_constants.dart';
+import 'package:salama/core/services/shared_pref.dart';
 import 'package:salama/core/size_handler/size_handler.dart';
 import 'package:salama/core/widgets/background.dart';
 import 'package:salama/features/home/view/home_screen.dart';
@@ -17,12 +18,51 @@ class SignInScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocConsumer<SignInCubit, SignInStates>(listener: (context, state) {
       if (state is SignInSuccessState) {
-        Fluttertoast.showToast(msg: "Login Successful");
+        SignInCubit.get(context)
+            .firestore
+            .collection('messages')
+            .doc(CacheHelper.getActualData(key: 'email'))
+            .get()
+            .then((value) {
+          if (value.exists) {
+            Navigator.pushAndRemoveUntil(
+                context,
+                PageRouteBuilder(
+                  pageBuilder: (context, animation, secondaryAnimation) =>
+                      HomeScreen(
+                    index: value.data()!['index'],
+                  ),
+                  transitionDuration: const Duration(milliseconds: 1000),
+                  transitionsBuilder:
+                      (context, animation, secondaryAnimation, child) {
+                    return FadeTransition(opacity: animation, child: child);
+                  },
+                ),
+                (route) => false);
+          } else {
+            Navigator.pushAndRemoveUntil(
+                context,
+                PageRouteBuilder(
+                  pageBuilder: (context, animation, secondaryAnimation) =>
+                      HomeScreen(
+                    index: 0,
+                  ),
+                  transitionDuration: const Duration(milliseconds: 1000),
+                  transitionsBuilder:
+                      (context, animation, secondaryAnimation, child) {
+                    return FadeTransition(opacity: animation, child: child);
+                  },
+                ),
+                (route) => false);
+          }
+        });
         Navigator.pushAndRemoveUntil(
             context,
             PageRouteBuilder(
               pageBuilder: (context, animation, secondaryAnimation) =>
-                  const HomeScreen(),
+                  HomeScreen(
+                index: 0,
+              ),
               transitionDuration: const Duration(milliseconds: 1000),
               transitionsBuilder:
                   (context, animation, secondaryAnimation, child) {
