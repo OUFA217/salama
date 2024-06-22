@@ -11,6 +11,7 @@ import 'package:salama/core/services/shared_pref.dart';
 import 'package:salama/features/home/controller/states.dart';
 import 'package:salama/features/home/model/home_model.dart';
 import 'package:salama/features/home/model/home_user_model.dart';
+import 'package:uuid/uuid.dart';
 
 class HomeCubit extends Cubit<HomeStates> {
   HomeCubit() : super(HomeInitialState()) {
@@ -138,7 +139,7 @@ class HomeCubit extends Cubit<HomeStates> {
     _saveMessageToFirestore(message);
 
     final messageUserLoading = types.TextMessage(
-      id: model.aiUser!.id!,
+      id: const Uuid().v4(),
       text: "Salama is Typing...",
       createdAt: DateTime.now().millisecondsSinceEpoch,
       author: aiUser,

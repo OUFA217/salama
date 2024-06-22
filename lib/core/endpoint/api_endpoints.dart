@@ -1,2 +1,2 @@
 // String apiUrl = "https://salama-api.herokuapp.com";
-String apiUrl = "https://5b13-34-82-136-38.ngrok-free.app/process";
+String apiUrl = "https://3c28-34-168-7-56.ngrok-free.app/process";
