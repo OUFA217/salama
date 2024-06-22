@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -19,6 +20,8 @@ class SignInCubit extends Cubit<SignInStates> {
   TextEditingController passwordController = TextEditingController();
 
   FirebaseAuth auth = FirebaseAuth.instance;
+
+  final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
   void changeShowPassword() {
     showPassword = !showPassword;

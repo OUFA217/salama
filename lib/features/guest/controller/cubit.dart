@@ -96,7 +96,7 @@ class GuestCubit extends Cubit<GuestStates> {
       messages.insert(0, message);
       final messageUser = types.TextMessage(
         id: const Uuid().v4(),
-        text: "Loading...",
+        text: "Salama is Typing...",
         createdAt: DateTime.now().millisecondsSinceEpoch,
         author: anotherUser,
       );
@@ -115,7 +115,8 @@ class GuestCubit extends Cubit<GuestStates> {
           createdAt: DateTime.now().millisecondsSinceEpoch,
           author: anotherUser,
         );
-        messages.removeWhere((element) => element.text == "Loading...");
+        messages
+            .removeWhere((element) => element.text == "Salama is Typing...");
         messages.insert(0, messageUser);
         Logger().i(messages.length.toString());
         CacheHelper.saveDate(key: "length", value: messages.length);

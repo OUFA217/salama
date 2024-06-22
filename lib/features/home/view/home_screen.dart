@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
@@ -10,7 +12,8 @@ import 'package:salama/features/home/controller/cubit.dart';
 import 'package:salama/features/home/controller/states.dart';
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+  HomeScreen({super.key, required this.index});
+  final int index;
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +52,120 @@ class HomeScreen extends StatelessWidget {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        SizedBox(height: SizeHandler.getHegiht(context) * 0.6),
+                        // ListView.builder(itemBuilder: (context, index) {
+                        //   return null;
+                        // }),
+                        SizedBox(
+                            height: MediaQuery.of(context).size.height * 0.55),
+                        ElevatedButton(
+                          onPressed: () {
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                return AlertDialog(
+                                  title: const Text('Feedback'),
+                                  content: Container(
+                                    child: TextField(
+                                      maxLines: 5,
+                                      minLines: 5,
+                                      decoration: InputDecoration(
+                                        border: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                            Radius.circular(10.0),
+                                          ),
+                                          borderSide: BorderSide(
+                                            color: Colors.black,
+                                          ),
+                                        ),
+                                      ),
+                                      keyboardType: TextInputType.multiline,
+                                      textInputAction: TextInputAction.done,
+                                      textAlign: TextAlign.right,
+                                      textDirection: TextDirection.rtl,
+                                      textAlignVertical:
+                                          TextAlignVertical.center,
+                                      controller: cubit.feedbackController,
+                                    ),
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        cubit.firestore
+                                            .collection('messages')
+                                            .doc(CacheHelper.getActualData(
+                                                key: "email"))
+                                            .get()
+                                            .then((value) {
+                                          log(value.exists.toString());
+                                          log(value.data().toString());
+                                          if (value.exists) {
+                                            cubit.firestore
+                                                .collection('messages')
+                                                .doc(CacheHelper.getActualData(
+                                                    key: "email"))
+                                                .update({
+                                              "Feedback":
+                                                  cubit.feedbackController.text
+                                            }).then((value) {
+                                              cubit.feedbackController.clear();
+
+                                              Navigator.pop(context);
+                                            }).catchError((e) {
+                                              log(e.toString());
+                                            });
+                                          } else {
+                                            cubit.firestore
+                                                .collection('messages')
+                                                .doc(CacheHelper.getActualData(
+                                                    key: "email"))
+                                                .set({
+                                              "Feedback":
+                                                  cubit.feedbackController.text
+                                            }).then((value) {
+                                              cubit.feedbackController.clear();
+                                              Navigator.pop(context);
+                                            }).catchError((e) {
+                                              log(e.toString());
+                                            });
+                                          }
+                                        });
+                                      },
+                                      child: const Text(
+                                        'Submit',
+                                        style: TextStyle(
+                                            color:
+                                                ColorsConstants.colorDefault),
+                                      ),
+                                    ),
+                                    TextButton(
+                                      onPressed: () {
+                                        cubit.feedbackController.clear();
+
+                                        Navigator.pop(context);
+                                      },
+                                      child: const Text(
+                                        'Cancel',
+                                        style: TextStyle(
+                                          color: Colors.red,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          },
+                          style: ElevatedButton.styleFrom(
+                            fixedSize: Size(SizeHandler.getWidth(context) * 0.5,
+                                SizeHandler.getHegiht(context) * 0.06),
+                            foregroundColor: ColorsConstants.colorDefault,
+                            backgroundColor: Colors.white, // Text color
+                          ),
+                          child: const Text('Leave a Feedback'),
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
                         ElevatedButton(
                           onPressed: () {
                             CacheHelper.sharedPreferences!.clear();
@@ -95,6 +211,7 @@ class HomeScreen extends StatelessWidget {
                         primaryColor: ColorsConstants.colorDefault),
                     messages: cubit.messages,
                     onSendPressed: cubit.handleSendPressed,
+                    showUserAvatars: true,
                     user: cubit.user),
                 Positioned(child: Container())
               ],

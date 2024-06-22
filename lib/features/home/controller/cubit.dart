@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:logger/logger.dart';
@@ -10,6 +11,7 @@ import 'package:salama/core/services/shared_pref.dart';
 import 'package:salama/features/home/controller/states.dart';
 import 'package:salama/features/home/model/home_model.dart';
 import 'package:salama/features/home/model/home_user_model.dart';
+import 'package:uuid/uuid.dart';
 
 class HomeCubit extends Cubit<HomeStates> {
   HomeCubit() : super(HomeInitialState()) {
@@ -22,13 +24,14 @@ class HomeCubit extends Cubit<HomeStates> {
   late types.User user;
   late HomeModel model;
   late types.User aiUser;
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-
+  int index = 0;
+  final FirebaseFirestore firestore = FirebaseFirestore.instance;
+  TextEditingController feedbackController = TextEditingController();
   void removeMesssageFromFirestore(types.TextMessage message) {
-    _firestore
+    firestore
         .collection('messages')
         .doc(CacheHelper.getActualData(key: "email"))
-        .collection('messages')
+        .collection('messages$index')
         .where('text', isEqualTo: message.text)
         .get()
         .then((snapshot) {
@@ -45,7 +48,7 @@ class HomeCubit extends Cubit<HomeStates> {
     List<String> arabicWords = matches.map((match) => match.group(0)!).toList();
     log((message.author.id == model.aiUser!.id).toString());
     final messageData = {
-      'text': message.text != "Loading..."
+      'text': message.text != "Salama is Typing..."
           ? arabicWords
               .toString()
               .replaceAll("[", "")
@@ -56,18 +59,19 @@ class HomeCubit extends Cubit<HomeStates> {
       'userId': message.author.id,
     };
 
-    _firestore
+    firestore
         .collection('messages')
         .doc(CacheHelper.getActualData(key: "email"))
-        .collection('messages')
+        .collection('messages$index')
         .add(messageData);
   }
 
-  void _loadMessagesFromFirestore() {
-    _firestore
+  void _loadMessagesFromFirestore({int chatLength = 0}) {
+    index = chatLength;
+    firestore
         .collection('messages')
         .doc(CacheHelper.getActualData(key: "email"))
-        .collection('messages')
+        .collection('messages$index')
         .orderBy('createdAt', descending: true)
         .get()
         .then((snapshot) {
@@ -87,7 +91,7 @@ class HomeCubit extends Cubit<HomeStates> {
   String? userName;
   String? name;
   void _initializeUser() {
-    _firestore
+    firestore
         .collection("users")
         .doc(CacheHelper.getActualData(key: "email"))
         .get()
@@ -135,8 +139,8 @@ class HomeCubit extends Cubit<HomeStates> {
     _saveMessageToFirestore(message);
 
     final messageUserLoading = types.TextMessage(
-      id: model.aiUser!.id!,
-      text: "Loading...",
+      id: const Uuid().v4(),
+      text: "Salama is Typing...",
       createdAt: DateTime.now().millisecondsSinceEpoch,
       author: aiUser,
     );
@@ -150,22 +154,13 @@ class HomeCubit extends Cubit<HomeStates> {
       "user_input": message.text.toString(),
     });
     response.then((value) {
-      RegExp regExp = RegExp(r'[\u0600-\u06FF\u0750-\u077F]+');
-      Iterable<RegExpMatch> matches = regExp.allMatches(
-          value.data["chatbot_output"].toString().replaceAll("\n", ""));
-      List<String> arabicWords =
-          matches.map((match) => match.group(0)!).toList();
       final messageUser = types.TextMessage(
         id: model.aiUser!.id!,
-        text: arabicWords
-            .toString()
-            .replaceAll("[", "")
-            .replaceAll("]", "")
-            .replaceAll(",", ""),
+        text: value.data["chatbot_output"],
         createdAt: DateTime.now().millisecondsSinceEpoch,
         author: aiUser,
       );
-      messages.removeWhere((element) => element.text == "Loading...");
+      messages.removeWhere((element) => element.text == "Salama is Typing...");
       removeMesssageFromFirestore(messageUserLoading);
       messages.insert(0, messageUser);
       emit(HomeSuccessState());
@@ -173,6 +168,8 @@ class HomeCubit extends Cubit<HomeStates> {
       _saveMessageToFirestore(messageUser);
     }).catchError((error) {
       Logger().e(error.toString());
+      log(error.toString());
+      emit(HomeErrorState(error.toString()));
     });
   }
 }

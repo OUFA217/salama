@@ -12,8 +12,12 @@ import 'package:salama/firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // NotificationService notificationService = NotificationService();
+  // await notificationService.initializeNotifications();
+
   await CacheHelper.init();
   Future.wait([
+    // notificationService.requestNotificationPermission(),
     CacheHelper.init(),
     Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform),
   ]);
